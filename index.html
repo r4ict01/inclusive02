@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fff8e7" />
+    <title>みえるタイマー</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div class="brand-mark" aria-hidden="true">⏱</div>
+        <div>
+          <p class="eyebrow">じかんを みえる化</p>
+          <h1>みえるタイマー</h1>
+        </div>
+      </header>
+
+      <section class="timer-card" aria-labelledby="timer-heading">
+        <h2 id="timer-heading">あと どのくらいかな？</h2>
+        <div class="timer" aria-live="polite">
+          <svg class="progress-ring" viewBox="0 0 260 260" role="img" aria-label="残り時間">
+            <circle class="ring-track" cx="130" cy="130" r="108"></circle>
+            <circle class="ring-progress" cx="130" cy="130" r="108"></circle>
+          </svg>
+          <div class="time-display">
+            <span id="time">01:00</span>
+            <span id="status">じゅんびOK</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <label for="duration">じかんを えらぶ</label>
+          <select id="duration" aria-label="タイマーの時間">
+            <option value="60">1分</option>
+            <option value="120">2分</option>
+            <option value="180">3分</option>
+            <option value="300">5分</option>
+            <option value="600">10分</option>
+            <option value="900">15分</option>
+            <option value="1200">20分</option>
+            <option value="1800">30分</option>
+            <option value="2700">45分</option>
+          </select>
+          <div class="button-row">
+            <button id="startButton" class="primary-button" type="button">▶ はじめる</button>
+            <button id="resetButton" class="secondary-button" type="button">↺ もどす</button>
+          </div>
+        </div>
+      </section>
+
+      <p class="tip">えらんだら「はじめる」を おしてね！</p>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

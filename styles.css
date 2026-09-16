@@ -1,0 +1,237 @@
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap");
+
+:root {
+  color: #263238;
+  background: #fff8e7;
+  font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 14%, #ffe5a8 0 8px, transparent 9px),
+    radial-gradient(circle at 88% 22%, #bce9e3 0 10px, transparent 11px),
+    radial-gradient(circle at 82% 84%, #ffd0a8 0 7px, transparent 8px),
+    #fff8e7;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(100% - 32px, 600px);
+  margin: 0 auto;
+  padding: 32px 0 28px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 18px;
+  background: #ffbd59;
+  box-shadow: 0 5px 0 #e59a34;
+  font-size: 30px;
+}
+
+.eyebrow {
+  margin: 0 0 2px;
+  color: #e48a20;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(25px, 7vw, 34px);
+  font-weight: 800;
+}
+
+.timer-card {
+  padding: clamp(24px, 6vw, 42px) clamp(18px, 7vw, 56px) 36px;
+  border: 3px solid #f1d9a4;
+  border-radius: 32px;
+  background: rgb(255 255 255 / 88%);
+  box-shadow: 0 12px 0 #f4dfb8, 0 18px 30px rgb(180 130 60 / 10%);
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 16px;
+  color: #59636a;
+  font-size: clamp(18px, 4.8vw, 22px);
+  font-weight: 700;
+}
+
+.timer {
+  position: relative;
+  width: min(76vw, 300px);
+  aspect-ratio: 1;
+  margin: 0 auto 23px;
+}
+
+.progress-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-track,
+.ring-progress {
+  fill: none;
+  stroke-width: 17;
+}
+
+.ring-track {
+  stroke: #e9f0ee;
+}
+
+.ring-progress {
+  stroke: #25b5a7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.35s linear, stroke 0.3s ease;
+}
+
+.time-display {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#time {
+  color: #263238;
+  font-size: clamp(44px, 13vw, 68px);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+#status {
+  margin-top: 9px;
+  color: #e48a20;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.controls {
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+
+label {
+  color: #59636a;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+select {
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 15px;
+  border: 2px solid #b7dcd7;
+  border-radius: 14px;
+  outline: none;
+  background: #f5fffd;
+  color: #263238;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+select:focus-visible,
+button:focus-visible {
+  outline: 4px solid #ffcf70;
+  outline-offset: 3px;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 10px;
+  margin-top: 7px;
+}
+
+button {
+  min-height: 54px;
+  border: 0;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 800;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+button:hover {
+  filter: brightness(1.04);
+}
+
+button:active {
+  transform: translateY(3px);
+}
+
+.primary-button {
+  background: #25b5a7;
+  box-shadow: 0 4px 0 #138d82;
+  color: white;
+}
+
+.secondary-button {
+  background: #ffe0a6;
+  box-shadow: 0 4px 0 #eab868;
+  color: #765014;
+}
+
+.tip {
+  margin: 27px 0 0;
+  color: #7c868a;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.finished .ring-progress {
+  stroke: #f29a4b;
+}
+
+@media (max-width: 420px) {
+  .app-shell {
+    padding-top: 22px;
+  }
+
+  .timer-card {
+    border-radius: 25px;
+  }
+
+  .button-row {
+    grid-template-columns: 1fr;
+  }
+}
