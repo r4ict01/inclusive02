@@ -12,6 +12,7 @@ const circumference = 2 * Math.PI * radius;
 let totalSeconds = Number(durationSelect.value);
 let remainingSeconds = totalSeconds;
 let timerId = null;
+let displayTimerId = null;
 let deadline = null;
 let audioContext = null;
 
@@ -31,7 +32,9 @@ function updateDisplay() {
 
 function finishTimer() {
   window.clearTimeout(timerId);
+  window.clearInterval(displayTimerId);
   timerId = null;
+  displayTimerId = null;
   deadline = null;
   remainingSeconds = 0;
   updateDisplay();
@@ -81,7 +84,7 @@ function prepareAudio() {
   if (audioContext.state === "suspended") audioContext.resume();
 }
 
-function updateTimer() {
+function updateRemainingDisplay() {
   if (!deadline) return;
 
   const nextRemaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
@@ -89,17 +92,13 @@ function updateTimer() {
     remainingSeconds = nextRemaining;
     updateDisplay();
   }
-
-  if (remainingSeconds === 0) {
-    finishTimer();
-    return;
-  }
-  timerId = window.setTimeout(updateTimer, 100);
 }
 
 function resetTimer() {
   window.clearTimeout(timerId);
+  window.clearInterval(displayTimerId);
   timerId = null;
+  displayTimerId = null;
   deadline = null;
   totalSeconds = Number(durationSelect.value);
   remainingSeconds = totalSeconds;
@@ -113,7 +112,9 @@ function resetTimer() {
 function toggleTimer() {
   if (timerId) {
     window.clearTimeout(timerId);
+    window.clearInterval(displayTimerId);
     timerId = null;
+    displayTimerId = null;
     if (deadline) {
       remainingSeconds = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
       updateDisplay();
@@ -133,7 +134,8 @@ function toggleTimer() {
   timerCard.classList.remove("finished");
   prepareAudio();
   deadline = Date.now() + remainingSeconds * 1000;
-  updateTimer();
+  timerId = window.setTimeout(finishTimer, remainingSeconds * 1000);
+  displayTimerId = window.setInterval(updateRemainingDisplay, 100);
 }
 
 durationSelect.addEventListener("change", resetTimer);
