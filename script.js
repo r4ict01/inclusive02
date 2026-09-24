@@ -1,4 +1,5 @@
 const durationSelect = document.querySelector("#duration");
+const soundSelect = document.querySelector("#sound");
 const startButton = document.querySelector("#startButton");
 const resetButton = document.querySelector("#resetButton");
 const timeDisplay = document.querySelector("#time");
@@ -11,6 +12,8 @@ const circumference = 2 * Math.PI * radius;
 let totalSeconds = Number(durationSelect.value);
 let remainingSeconds = totalSeconds;
 let timerId = null;
+let deadline = null;
+let audioContext = null;
 
 progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
 
@@ -27,7 +30,9 @@ function updateDisplay() {
 }
 
 function finishTimer() {
+  window.clearTimeout(timerId);
   timerId = null;
+  deadline = null;
   remainingSeconds = 0;
   updateDisplay();
   statusDisplay.textContent = "おわり！";
@@ -41,23 +46,61 @@ function playBell() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext) return;
 
-  const audioContext = new AudioContext();
+  if (!audioContext) audioContext = new AudioContext();
+  if (audioContext.state === "suspended") audioContext.resume();
+
   const oscillator = audioContext.createOscillator();
   const gain = audioContext.createGain();
-  oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
-  oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.16);
+  const now = audioContext.currentTime;
+  const sound = soundSelect.value;
+  const frequencies = {
+    bell: [660, 880],
+    ping: [880, 660],
+    chime: [523.25, 659.25, 783.99],
+  }[sound] || [660, 880];
+  const duration = sound === "chime" ? 1.05 : 0.7;
+
+  oscillator.type = sound === "ping" ? "triangle" : "sine";
+  oscillator.frequency.setValueAtTime(frequencies[0], now);
+  frequencies.slice(1).forEach((frequency, index) => {
+    oscillator.frequency.setValueAtTime(frequency, now + (index + 1) * 0.16);
+  });
   gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.25, audioContext.currentTime + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.7);
+  gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
   oscillator.connect(gain).connect(audioContext.destination);
   oscillator.start();
-  oscillator.stop(audioContext.currentTime + 0.7);
+  oscillator.stop(now + duration);
+}
+
+function prepareAudio() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return;
+
+  if (!audioContext) audioContext = new AudioContext();
+  if (audioContext.state === "suspended") audioContext.resume();
+}
+
+function updateTimer() {
+  if (!deadline) return;
+
+  const nextRemaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+  if (nextRemaining !== remainingSeconds) {
+    remainingSeconds = nextRemaining;
+    updateDisplay();
+  }
+
+  if (remainingSeconds === 0) {
+    finishTimer();
+    return;
+  }
+  timerId = window.setTimeout(updateTimer, 100);
 }
 
 function resetTimer() {
-  window.clearInterval(timerId);
+  window.clearTimeout(timerId);
   timerId = null;
+  deadline = null;
   totalSeconds = Number(durationSelect.value);
   remainingSeconds = totalSeconds;
   updateDisplay();
@@ -69,8 +112,13 @@ function resetTimer() {
 
 function toggleTimer() {
   if (timerId) {
-    window.clearInterval(timerId);
+    window.clearTimeout(timerId);
     timerId = null;
+    if (deadline) {
+      remainingSeconds = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      updateDisplay();
+    }
+    deadline = null;
     statusDisplay.textContent = "いったん おやすみ";
     startButton.textContent = "▶ つづける";
     return;
@@ -83,14 +131,16 @@ function toggleTimer() {
   statusDisplay.textContent = "カウント中！";
   startButton.textContent = "Ⅱ とめる";
   timerCard.classList.remove("finished");
-  timerId = window.setInterval(() => {
-    remainingSeconds -= 1;
-    updateDisplay();
-    if (remainingSeconds <= 0) finishTimer();
-  }, 1000);
+  prepareAudio();
+  deadline = Date.now() + remainingSeconds * 1000;
+  updateTimer();
 }
 
 durationSelect.addEventListener("change", resetTimer);
+soundSelect.addEventListener("change", () => {
+  if (!timerId) return;
+  prepareAudio();
+});
 startButton.addEventListener("click", toggleTimer);
 resetButton.addEventListener("click", resetTimer);
 updateDisplay();
