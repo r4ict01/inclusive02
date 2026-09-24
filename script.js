@@ -52,8 +52,6 @@ function playBell() {
   if (!audioContext) audioContext = new AudioContext();
   if (audioContext.state === "suspended") audioContext.resume();
 
-  const oscillator = audioContext.createOscillator();
-  const gain = audioContext.createGain();
   const now = audioContext.currentTime;
   const sound = soundSelect.value;
   const frequencies = {
@@ -62,18 +60,25 @@ function playBell() {
     chime: [523.25, 659.25, 783.99],
   }[sound] || [660, 880];
   const duration = sound === "chime" ? 1.05 : 0.7;
+  const interval = duration + 0.18;
 
-  oscillator.type = sound === "ping" ? "triangle" : "sine";
-  oscillator.frequency.setValueAtTime(frequencies[0], now);
-  frequencies.slice(1).forEach((frequency, index) => {
-    oscillator.frequency.setValueAtTime(frequency, now + (index + 1) * 0.16);
-  });
-  gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-  oscillator.connect(gain).connect(audioContext.destination);
-  oscillator.start();
-  oscillator.stop(now + duration);
+  for (let repeat = 0; repeat < 3; repeat += 1) {
+    const startTime = now + repeat * interval;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = sound === "ping" ? "triangle" : "sine";
+    oscillator.frequency.setValueAtTime(frequencies[0], startTime);
+    frequencies.slice(1).forEach((frequency, index) => {
+      oscillator.frequency.setValueAtTime(frequency, startTime + (index + 1) * 0.16);
+    });
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.25, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    oscillator.connect(gain).connect(audioContext.destination);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration);
+  }
 }
 
 function prepareAudio() {
